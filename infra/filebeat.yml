@@ -1,0 +1,57 @@
+# Filebeat config — ships .copilot/audit/*.jsonl to Elasticsearch
+# Install:
+#   1. Apply infra/elastic-index-template.json to ES (PUT /_index_template/copilot-audit)
+#   2. Bootstrap the rollover alias:
+#        PUT /copilot-audit-000001  { "aliases": { "copilot-audit": { "is_write_index": true } } }
+#   3. filebeat -c infra/filebeat.yml -e
+#   4. Open Kibana → see infra/kibana-setup.md for index pattern + dashboard
+
+filebeat.inputs:
+  - type: filestream
+    id: copilot-audit
+    enabled: true
+    paths:
+      - "${COPILOT_AUDIT_DIR:-${HOME}/.copilot/audit}/*.jsonl"
+    parsers:
+      - ndjson:
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+          expand_keys: true
+    fields:
+      data_stream.dataset: copilot.audit
+      data_stream.namespace: ${COPILOT_AUDIT_NS:-default}
+    fields_under_root: true
+    close.on_state_change.inactive: 5m
+    clean_inactive: 72h
+    ignore_older: 48h
+
+processors:
+  - add_host_metadata: ~
+  - drop_fields:
+      fields: ["host.os.build", "host.os.kernel", "agent.ephemeral_id"]
+      ignore_missing: true
+  # Redaction guard: if user_message_redacted is false, drop any free-text field
+  # we don't expect. Defence in depth — the agents already redact.
+  - drop_fields:
+      fields: ["message", "prompt", "completion"]
+      ignore_missing: true
+
+output.elasticsearch:
+  hosts: ["${ELASTIC_HOSTS:-https://localhost:9200}"]
+  username: "${ELASTIC_USERNAME}"
+  password: "${ELASTIC_PASSWORD}"
+  ssl.verification_mode: "${ELASTIC_SSL_VERIFICATION:-full}"
+  index: "copilot-audit"     # write alias
+  pipeline: ""
+
+setup.template.enabled: false   # we manage the template manually (see infra/elastic-index-template.json)
+setup.ilm.enabled: false        # we manage ILM manually
+
+logging.level: warning
+logging.to_files: true
+logging.files:
+  path: ${COPILOT_AUDIT_DIR:-${HOME}/.copilot/audit}/filebeat-logs
+  name: filebeat.log
+  keepfiles: 5
+  permissions: 0644

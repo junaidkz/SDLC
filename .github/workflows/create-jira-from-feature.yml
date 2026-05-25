@@ -1,0 +1,86 @@
+name: Create Jira from feature
+
+# Creates a Jira issue when a .feature file is added or updated on a PR
+# with `jira: pending` in its frontmatter. Writes the issue key back into
+# the feature file and docs/requirements.md, then commits the change to
+# the PR branch.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'features/**/*.feature'
+
+permissions:
+  contents: write       # commit the key back
+  pull-requests: write  # update PR body
+
+env:
+  JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}     # e.g. https://yourorg.atlassian.net
+  JIRA_PROJECT_KEY: ${{ vars.JIRA_PROJECT_KEY }} # e.g. PLAT
+  JIRA_USER_EMAIL: ${{ vars.JIRA_USER_EMAIL }}
+  JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+jobs:
+  create-tickets:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'   # avoid loops on the bot's own commits
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Detect changed feature files
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          files=$(git diff --name-only --diff-filter=AM "$base" "$head" -- 'features/**/*.feature' || true)
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$files" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: "Create Jira issues for `jira: pending`"
+        if: steps.changed.outputs.files != ''
+        env:
+          FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          set -euo pipefail
+          python3 scripts/create_jira_from_feature.py $FILES
+
+      - name: Commit Jira keys back to PR
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No frontmatter updates."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add features/ docs/requirements.md
+          git commit -m "chore: attach Jira keys to new requirements [skip ci]"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
+      - name: "Append Refs: <key> lines to PR body"
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const keys = fs.existsSync('.jira-keys-created')
+              ? fs.readFileSync('.jira-keys-created', 'utf8').trim().split('\n').filter(Boolean)
+              : [];
+            if (!keys.length) return;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner, repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            const refs = keys.map(k => `Refs: ${k}`).join('\n');
+            const body = (pr.body || '').includes('Refs:')
+              ? pr.body
+              : `${pr.body || ''}\n\n${refs}\n`;
+            await github.rest.pulls.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number, body
+            });

@@ -1,0 +1,364 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1800" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <!-- ============ DEFS ============ -->
+  <defs>
+    <!-- Subtle dot grid -->
+    <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1" fill="#1E293B" opacity="0.5"/>
+    </pattern>
+
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#0A0F1C"/>
+    </linearGradient>
+
+    <!-- Card gradient overlays per agent type -->
+    <linearGradient id="g-user" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FB7185" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FB7185" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="g-init" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#94A3B8" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#94A3B8" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="g-orch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FCD34D" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FCD34D" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="g-rg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34D399" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#34D399" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="g-plan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#38BDF8" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#38BDF8" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="g-impl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A78BFA" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="g-rev" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F472B6" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#F472B6" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="g-audit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="g-jira" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60A5FA" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#60A5FA" stop-opacity="0.04"/>
+    </linearGradient>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Arrow markers -->
+    <marker id="arrow-main" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#F8FAFC"/>
+    </marker>
+    <marker id="arrow-loop" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#F472B6"/>
+    </marker>
+    <marker id="arrow-go" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#FACC15"/>
+    </marker>
+    <marker id="arrow-audit" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#22D3EE"/>
+    </marker>
+    <marker id="arrow-jira" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#60A5FA"/>
+    </marker>
+  </defs>
+
+  <!-- ============ BACKGROUND ============ -->
+  <rect width="1100" height="1800" fill="url(#bg)"/>
+  <rect width="1100" height="1800" fill="url(#dots)"/>
+
+  <!-- ============ TITLE BLOCK ============ -->
+  <g transform="translate(550, 60)" text-anchor="middle">
+    <text y="0" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="700" fill="#F8FAFC" letter-spacing="0.5">
+      Copilot Agent Orchestrator
+    </text>
+    <text y="32" font-family="ui-monospace, 'SF Mono', Monaco, monospace" font-size="13" fill="#64748B" letter-spacing="2">
+      USER · REQUIREMENTS · PLAN · IMPLEMENT ⇄ REVIEW · SHIP
+    </text>
+    <line x1="-220" y1="50" x2="220" y2="50" stroke="#1E293B" stroke-width="1"/>
+    <text y="72" font-family="Georgia, serif" font-size="13" font-style="italic" fill="#94A3B8">
+      every line of code traces back to a requirement
+    </text>
+  </g>
+
+  <!-- ============ COLUMN LABELS ============ -->
+  <g font-family="ui-monospace, monospace" font-size="10" letter-spacing="2" fill="#475569">
+    <text x="125" y="180" text-anchor="middle">AUDIT PIPELINE</text>
+    <text x="550" y="180" text-anchor="middle">MAIN FLOW</text>
+    <text x="975" y="180" text-anchor="middle">CI / SOURCE OF TRUTH</text>
+  </g>
+  <g stroke="#1E293B" stroke-width="1" stroke-dasharray="3 6">
+    <line x1="125" y1="195" x2="125" y2="1590"/>
+    <line x1="975" y1="195" x2="975" y2="1590"/>
+  </g>
+
+  <!-- ============ NODE: USER (trigger) ============ -->
+  <g transform="translate(550, 230)">
+    <circle r="44" fill="url(#g-user)" stroke="#FB7185" stroke-width="2" filter="url(#glow)"/>
+    <text y="-2" text-anchor="middle" font-size="20" font-weight="700" fill="#FB7185">●</text>
+    <text y="14" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#FB7185">USER</text>
+    <text y="28" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#94A3B8">trigger</text>
+  </g>
+  <text x="630" y="240" font-family="Georgia, serif" font-size="13" font-style="italic" fill="#CBD5E1">"I want a new feature…"</text>
+
+  <!-- arrow user → orchestrator -->
+  <line x1="550" y1="278" x2="550" y2="320" stroke="#F8FAFC" stroke-width="1.5" marker-end="url(#arrow-main)"/>
+
+  <!-- ============ NODE: ORCHESTRATOR ============ -->
+  <g transform="translate(550, 365)">
+    <rect x="-130" y="-35" width="260" height="70" rx="8" fill="url(#g-orch)" stroke="#FCD34D" stroke-width="1.5"/>
+    <text y="-14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#FCD34D">Orchestrator</text>
+    <text y="4" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#94A3B8">GPT-5 mini · router</text>
+    <text y="22" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#64748B">no code · no plan · enforces gates</text>
+  </g>
+
+  <!-- INITIATOR side branch -->
+  <path d="M 420 365 Q 320 365 320 440 L 320 470" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arrow-main)"/>
+  <text x="280" y="410" font-family="ui-monospace, monospace" font-size="10" fill="#94A3B8">first run</text>
+
+  <g transform="translate(320, 510)">
+    <rect x="-95" y="-32" width="190" height="64" rx="8" fill="url(#g-init)" stroke="#94A3B8" stroke-width="1.5"/>
+    <text y="-12" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#CBD5E1">Initiator</text>
+    <text y="4" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#94A3B8">GPT-5 mini</text>
+    <text y="20" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#64748B">/scan-repo skill</text>
+  </g>
+  <text x="320" y="585" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#64748B">writes</text>
+  <text x="320" y="600" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#22D3EE">.copilot/context.json</text>
+  <!-- arrow back to orch -->
+  <path d="M 320 545 Q 320 620 420 365" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arrow-main)"/>
+
+  <!-- main flow continues down -->
+  <line x1="550" y1="400" x2="550" y2="640" stroke="#F8FAFC" stroke-width="1.5" marker-end="url(#arrow-main)"/>
+  <text x="566" y="525" font-family="ui-monospace, monospace" font-size="10" fill="#CBD5E1">behaviour change</text>
+
+  <!-- ============ NODE: REQUIREMENTS GATHERER ============ -->
+  <g transform="translate(550, 695)">
+    <rect x="-150" y="-42" width="300" height="84" rx="8" fill="url(#g-rg)" stroke="#34D399" stroke-width="2"/>
+    <text y="-18" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="17" font-weight="700" fill="#34D399">Requirements Gatherer</text>
+    <text y="0" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#94A3B8">GPT-5 · interactive</text>
+    <text y="18" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#64748B">/author-gherkin skill</text>
+    <text y="34" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#34D399">writes features/&lt;area&gt;/&lt;name&gt;.feature  (jira: pending)</text>
+  </g>
+
+  <line x1="550" y1="737" x2="550" y2="800" stroke="#F8FAFC" stroke-width="1.5" marker-end="url(#arrow-main)"/>
+
+  <!-- ============ GATE 1 ============ -->
+  <g transform="translate(550, 855)">
+    <polygon points="0,-45 130,0 0,45 -130,0" fill="rgba(250, 204, 21, 0.10)" stroke="#FACC15" stroke-width="2" filter="url(#glow)"/>
+    <text y="-10" text-anchor="middle" font-size="16" font-weight="700" fill="#FACC15">★</text>
+    <text y="6" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#FACC15">USER GATE 1</text>
+    <text y="22" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#FDE68A">approve requirements?</text>
+  </g>
+
+  <!-- revise loop -->
+  <path d="M 420 855 Q 350 855 350 770 Q 350 695 400 695" fill="none" stroke="#FACC15" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-go)"/>
+  <text x="320" y="780" font-family="ui-monospace, monospace" font-size="10" fill="#FACC15" text-anchor="middle">revise</text>
+
+  <!-- go arrow down -->
+  <line x1="550" y1="900" x2="550" y2="960" stroke="#FACC15" stroke-width="1.5" marker-end="url(#arrow-go)"/>
+  <text x="566" y="935" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#FACC15">go</text>
+
+  <!-- ============ NODE: PLANNER ============ -->
+  <g transform="translate(550, 1015)">
+    <rect x="-150" y="-42" width="300" height="84" rx="8" fill="url(#g-plan)" stroke="#38BDF8" stroke-width="2"/>
+    <text y="-18" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="17" font-weight="700" fill="#38BDF8">Planner</text>
+    <text y="0" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#94A3B8">GPT-5 · READ-ONLY</text>
+    <text y="18" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#64748B">single-shot · no edits · no shell</text>
+    <text y="34" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#38BDF8">step-by-step plan + AC → test mapping</text>
+  </g>
+
+  <line x1="550" y1="1057" x2="550" y2="1120" stroke="#F8FAFC" stroke-width="1.5" marker-end="url(#arrow-main)"/>
+
+  <!-- ============ GATE 2 ============ -->
+  <g transform="translate(550, 1175)">
+    <polygon points="0,-45 130,0 0,45 -130,0" fill="rgba(250, 204, 21, 0.10)" stroke="#FACC15" stroke-width="2" filter="url(#glow)"/>
+    <text y="-10" text-anchor="middle" font-size="16" font-weight="700" fill="#FACC15">★</text>
+    <text y="6" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#FACC15">USER GATE 2</text>
+    <text y="22" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#FDE68A">approve plan?</text>
+  </g>
+
+  <!-- revise loop -->
+  <path d="M 420 1175 Q 350 1175 350 1090 Q 350 1015 400 1015" fill="none" stroke="#FACC15" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-go)"/>
+  <text x="320" y="1100" font-family="ui-monospace, monospace" font-size="10" fill="#FACC15" text-anchor="middle">revise</text>
+
+  <!-- go arrow down -->
+  <line x1="550" y1="1220" x2="550" y2="1290" stroke="#FACC15" stroke-width="1.5" marker-end="url(#arrow-go)"/>
+  <text x="566" y="1258" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#FACC15">go</text>
+
+  <!-- ============ NODE: IMPLEMENTER ============ -->
+  <g transform="translate(420, 1355)">
+    <rect x="-150" y="-50" width="300" height="100" rx="8" fill="url(#g-impl)" stroke="#A78BFA" stroke-width="2"/>
+    <text y="-26" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="17" font-weight="700" fill="#A78BFA">Implementer</text>
+    <text y="-8" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#94A3B8">Claude Sonnet 4.5</text>
+    <text y="10" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#64748B">runTasks (no runCommands) · no installs</text>
+    <text y="26" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#A78BFA">/stamp-traceability  /propose-adr  /append-rtm</text>
+    <text y="40" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#A78BFA">/emit-audit</text>
+  </g>
+
+  <!-- ============ NODE: REVIEWER ============ -->
+  <g transform="translate(810, 1355)">
+    <rect x="-150" y="-50" width="300" height="100" rx="8" fill="url(#g-rev)" stroke="#F472B6" stroke-width="2"/>
+    <text y="-26" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="17" font-weight="700" fill="#F472B6">Reviewer</text>
+    <text y="-8" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#94A3B8">o3 · DIFFERENT MODEL FAMILY</text>
+    <text y="10" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-style="italic" fill="#64748B">read-only · adversarial</text>
+    <text y="26" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#F472B6">/review-owasp  /emit-audit</text>
+    <text y="40" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#F8FAFC">APPROVED ✓  |  REJECTED ✗</text>
+  </g>
+
+  <!-- centre input arrow to implementer -->
+  <line x1="550" y1="1290" x2="450" y2="1320" stroke="#FACC15" stroke-width="1.5" marker-end="url(#arrow-go)"/>
+
+  <!-- Implementer → Reviewer (submit) -->
+  <path d="M 570 1355 L 660 1355" fill="none" stroke="#F8FAFC" stroke-width="2" marker-end="url(#arrow-main)"/>
+  <text x="615" y="1340" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#F8FAFC">submit</text>
+
+  <!-- Reviewer → Implementer (REJECTED loop) - the BIG arc -->
+  <path d="M 810 1405 Q 810 1490 615 1490 Q 420 1490 420 1410" fill="none" stroke="#F472B6" stroke-width="2.5" marker-end="url(#arrow-loop)"/>
+  <text x="615" y="1483" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12" font-weight="700" fill="#F472B6" letter-spacing="2">REJECTED · findings</text>
+
+  <!-- Reviewer APPROVED → ship -->
+  <path d="M 870 1355 Q 970 1355 970 1430 L 970 1500" fill="none" stroke="#34D399" stroke-width="2" marker-end="url(#arrow-main)"/>
+  <text x="985" y="1430" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#34D399">APPROVED</text>
+
+  <!-- ============ COMMIT + PR ============ -->
+  <g transform="translate(970, 1545)">
+    <rect x="-105" y="-30" width="210" height="60" rx="8" fill="rgba(52, 211, 153, 0.10)" stroke="#34D399" stroke-width="1.5"/>
+    <text y="-8" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#34D399">commit + PR</text>
+    <text y="10" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#CBD5E1">[REQ-XXX] · Refs: PLAT-NN</text>
+    <text y="22" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#CBD5E1">RTM updated · traceability.md</text>
+  </g>
+
+  <!-- arrow PR → user (delivered) -->
+  <path d="M 865 1545 Q 550 1670 550 1740" fill="none" stroke="#34D399" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-main)"/>
+
+  <!-- ============ DELIVERED ============ -->
+  <g transform="translate(550, 1720)">
+    <circle r="35" fill="url(#g-user)" stroke="#34D399" stroke-width="2"/>
+    <text y="0" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="22" fill="#34D399">✓</text>
+    <text y="18" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" font-weight="700" letter-spacing="2" fill="#34D399">DELIVERED</text>
+  </g>
+
+  <!-- ============ JIRA CI PIPE (RIGHT) ============ -->
+  <g transform="translate(975, 800)">
+    <rect x="-95" y="-35" width="190" height="70" rx="8" fill="url(#g-jira)" stroke="#60A5FA" stroke-width="1.5"/>
+    <text y="-14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#60A5FA">GitHub Action</text>
+    <text y="2" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#94A3B8">create-jira-from-feature.yml</text>
+    <text y="20" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#64748B">on PR open · stdlib python</text>
+  </g>
+
+  <!-- Jira -->
+  <g transform="translate(975, 940)">
+    <rect x="-75" y="-32" width="150" height="64" rx="8" fill="rgba(96, 165, 250, 0.10)" stroke="#60A5FA" stroke-width="2"/>
+    <text y="-10" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#60A5FA">Jira</text>
+    <text y="8" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#F8FAFC">PLAT-1234</text>
+    <text y="22" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#64748B">source of truth</text>
+  </g>
+
+  <!-- PR triggers GHA -->
+  <path d="M 970 1515 Q 1050 1300 1050 900 L 1050 800 L 1070 800" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-jira)"/>
+
+  <!-- GHA → Jira -->
+  <line x1="975" y1="835" x2="975" y2="908" stroke="#60A5FA" stroke-width="1.5" marker-end="url(#arrow-jira)"/>
+
+  <!-- GHA writes key back to .feature (loop) -->
+  <path d="M 880 800 Q 720 800 720 730 L 700 730" fill="none" stroke="#60A5FA" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrow-jira)"/>
+  <text x="790" y="790" font-family="ui-monospace, monospace" font-size="9" fill="#60A5FA" text-anchor="middle">writes jira key back</text>
+
+  <!-- ============ AUDIT PIPELINE (LEFT) ============ -->
+  <!-- JSONL -->
+  <g transform="translate(125, 695)">
+    <rect x="-85" y="-30" width="170" height="60" rx="8" fill="url(#g-audit)" stroke="#22D3EE" stroke-width="1.5"/>
+    <text y="-10" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#22D3EE">audit_log.py</text>
+    <text y="6" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#94A3B8">~/.copilot/audit/*.jsonl</text>
+    <text y="20" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#64748B">stdlib · per-step</text>
+  </g>
+
+  <!-- Filebeat -->
+  <g transform="translate(125, 940)">
+    <rect x="-75" y="-28" width="150" height="56" rx="8" fill="url(#g-audit)" stroke="#22D3EE" stroke-width="1.5"/>
+    <text y="-8" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#22D3EE">Filebeat</text>
+    <text y="8" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#94A3B8">tails JSONL · ships NDJSON</text>
+    <text y="20" text-anchor="middle" font-family="Georgia, serif" font-size="8" font-style="italic" fill="#64748B">or ship_audit_to_es.py</text>
+  </g>
+
+  <!-- Elasticsearch -->
+  <g transform="translate(125, 1175)">
+    <rect x="-85" y="-30" width="170" height="60" rx="8" fill="rgba(34, 211, 238, 0.10)" stroke="#22D3EE" stroke-width="2"/>
+    <text y="-10" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#22D3EE">Elasticsearch</text>
+    <text y="6" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#F8FAFC">copilot-audit-*</text>
+    <text y="20" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#64748B">dynamic: strict mapping</text>
+  </g>
+
+  <!-- Kibana -->
+  <g transform="translate(125, 1410)">
+    <rect x="-90" y="-32" width="180" height="64" rx="8" fill="rgba(251, 146, 60, 0.10)" stroke="#FB923C" stroke-width="2" filter="url(#glow)"/>
+    <text y="-10" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#FB923C">Kibana</text>
+    <text y="8" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#F8FAFC">dashboard · alerts · replay</text>
+    <text y="22" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#94A3B8">per-REQ-ID · per-session · cost</text>
+  </g>
+
+  <!-- audit feed lines: from each agent to JSONL -->
+  <g stroke="#22D3EE" stroke-width="1" stroke-dasharray="2 4" fill="none" opacity="0.75">
+    <path d="M 225 510 Q 175 510 175 670" marker-end="url(#arrow-audit)"/>
+    <path d="M 400 695 L 215 695" marker-end="url(#arrow-audit)"/>
+    <path d="M 400 1015 Q 175 1015 175 720" marker-end="url(#arrow-audit)"/>
+    <path d="M 270 1355 Q 175 1355 175 720" marker-end="url(#arrow-audit)"/>
+    <path d="M 660 1355 Q 1010 1355 1010 200 Q 1010 130 175 170 Q 60 170 60 670 L 100 690" marker-end="url(#arrow-audit)" opacity="0.4"/>
+  </g>
+  <text x="50" y="555" font-family="ui-monospace, monospace" font-size="9" fill="#22D3EE" transform="rotate(-90 50 555)">audit event</text>
+
+  <!-- audit pipeline vertical arrows -->
+  <line x1="125" y1="725" x2="125" y2="908" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arrow-audit)"/>
+  <line x1="125" y1="968" x2="125" y2="1143" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arrow-audit)"/>
+  <line x1="125" y1="1205" x2="125" y2="1376" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arrow-audit)"/>
+
+  <!-- ============ LEGEND (top of footer area) ============ -->
+  <g transform="translate(60, 1620)" font-family="ui-monospace, monospace" font-size="10" fill="#64748B">
+    <text x="0" y="0" letter-spacing="2" fill="#475569">LEGEND</text>
+    <line x1="0" y1="10" x2="980" y2="10" stroke="#1E293B"/>
+
+    <g transform="translate(0, 25)">
+      <line x1="0" y1="8" x2="40" y2="8" stroke="#F8FAFC" stroke-width="1.5" marker-end="url(#arrow-main)"/>
+      <text x="50" y="12" fill="#CBD5E1">main flow</text>
+    </g>
+    <g transform="translate(160, 25)">
+      <line x1="0" y1="8" x2="40" y2="8" stroke="#FACC15" stroke-width="1.5" marker-end="url(#arrow-go)"/>
+      <text x="50" y="12" fill="#FACC15">user gate · "go"</text>
+    </g>
+    <g transform="translate(360, 25)">
+      <line x1="0" y1="8" x2="40" y2="8" stroke="#F472B6" stroke-width="2" marker-end="url(#arrow-loop)"/>
+      <text x="50" y="12" fill="#F472B6">rejection loop</text>
+    </g>
+    <g transform="translate(540, 25)">
+      <line x1="0" y1="8" x2="40" y2="8" stroke="#22D3EE" stroke-width="1" stroke-dasharray="2 4" marker-end="url(#arrow-audit)"/>
+      <text x="50" y="12" fill="#22D3EE">audit event</text>
+    </g>
+    <g transform="translate(700, 25)">
+      <line x1="0" y1="8" x2="40" y2="8" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-jira)"/>
+      <text x="50" y="12" fill="#60A5FA">CI / Jira pipe</text>
+    </g>
+    <g transform="translate(860, 25)">
+      <line x1="0" y1="8" x2="40" y2="8" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arrow-main)"/>
+      <text x="50" y="12" fill="#94A3B8">utility / once</text>
+    </g>
+  </g>
+
+  <!-- footer -->
+  <text x="550" y="1790" text-anchor="middle" font-family="Georgia, serif" font-size="11" font-style="italic" fill="#475569">
+    six agents · seven skills · two human gates · one audit trail · zero MCP
+  </text>
+</svg>

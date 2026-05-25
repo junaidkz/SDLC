@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "generated_at": "<ISO-8601 timestamp>",
+  "summary": "<one-line description of the stack and deployment, 80 char max>",
+  "stack": {
+    "languages": ["<e.g. csharp, typescript, python>"],
+    "frameworks": ["<e.g. aspnetcore-8, angular-17>"],
+    "package_managers": ["<e.g. nuget, npm, pip>"],
+    "runtime": ["<e.g. dotnet-8, node-20>"]
+  },
+  "commands": {
+    "install": ["<commands to install deps>"],
+    "build": ["<build commands>"],
+    "test_unit": ["<unit test commands>"],
+    "test_integration": ["<integration test commands>"],
+    "lint": ["<lint commands>"],
+    "audit": ["<vulnerability scan commands>"]
+  },
+  "layout": {
+    "src": ["<source folders>"],
+    "tests": ["<test folders>"],
+    "frontend": ["<frontend folders if separate>"],
+    "features": ["features/"],
+    "docs": ["docs/"]
+  },
+  "conventions": {
+    "test_framework_dotnet": "<e.g. xunit + moq>",
+    "test_framework_frontend": "<e.g. jest + testing-library>",
+    "test_naming": "<convention>",
+    "di_container": "<e.g. Microsoft.Extensions.DependencyInjection>",
+    "logging": "<e.g. ILogger + Serilog>",
+    "style": "<reference to .editorconfig / lint config>"
+  },
+  "automation": {
+    "jira_creation": ".github/workflows/create-jira-from-feature.yml",
+    "audit_shipping": "infra/filebeat.yml",
+    "audit_index": "copilot-audit"
+  },
+  "guardrails": {
+    "no_install_without_adr": true,
+    "no_eval_from_untrusted": true,
+    "secrets_via": "<e.g. Azure Key Vault, env vars>"
+  }
+}

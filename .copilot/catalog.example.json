@@ -1,0 +1,16 @@
+{
+  "_comment": "Service-catalog config for discover-application skill. Commit this file (no secrets). Auth secrets go in env vars referenced by token_env / user_env / pass_env. Delete this file to fall back to manual repo entry.",
+
+  "type": "backstage",
+  "url": "https://backstage.acme.internal/api/catalog",
+  "auth": {
+    "type": "bearer",
+    "token_env": "BACKSTAGE_TOKEN"
+  },
+  "repo_field_map": {
+    "name": "name",
+    "url": "url",
+    "default_branch": "defaultBranch",
+    "role": "role"
+  }
+}
