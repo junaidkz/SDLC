@@ -1,0 +1,68 @@
+name: Validate orchestrator config
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pyyaml
+        run: pip install pyyaml
+
+      - name: Validate agent frontmatter + handoff prompts
+        run: python governance/validators/validate_agents.py .github/agents
+
+      - name: Validate skill frontmatter + length + sections
+        run: python governance/validators/validate_skills.py .github/skills
+
+      - name: Compile all Python (stdlib smoke test)
+        run: find . -name "*.py" -not -path "./.git/*" -exec python -m py_compile {} +
+
+      - name: Verify JSON Schema parses
+        run: python -c "import json; json.load(open('.github/schemas/handoffs.schema.json'))"
+
+      - name: Smoke-test validate_handoff (rejects bad payload)
+        run: |
+          set +e
+          echo '{"status":"WRONG"}' | python scripts/validators/validate_handoff.py --kind ReviewVerdict --payload - 2>/dev/null
+          rc=$?
+          if [ $rc -eq 0 ]; then
+            echo "::error::validate_handoff accepted invalid payload"; exit 1
+          fi
+          echo "validate_handoff correctly rejected bad payload (rc=$rc)"
+
+      - name: Smoke-test validate_handoff (accepts good payload)
+        run: |
+          echo '{"status":"APPROVED","req_ids":["REQ-TEST-001"]}' | python scripts/validators/validate_handoff.py --kind ReviewVerdict --payload -
+
+      - name: Smoke-test validate_req_id on this repo
+        run: |
+          # Should pass for the seeded REQ-AUTH-014 in docs/requirements.md (if present)
+          if grep -q "^## REQ-AUTH-014" docs/requirements.md 2>/dev/null; then
+            python scripts/validators/validate_req_id.py REQ-AUTH-014
+          else
+            echo "no seeded REQ to test against; skipping"
+          fi
+
+      - name: Smoke-test validate_req_id rejects fake IDs
+        run: |
+          set +e
+          python scripts/validators/validate_req_id.py REQ-FAKE-999 2>/dev/null
+          rc=$?
+          if [ $rc -eq 0 ]; then
+            echo "::error::validate_req_id accepted non-existent ID"; exit 1
+          fi
+          echo "validate_req_id correctly rejected fake ID (rc=$rc)"

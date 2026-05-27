@@ -35,13 +35,13 @@ Build these in Kibana → Dashboards → Create. Each is one Lens or aggregation
 |---|---|---|---|---|
 | 1 | **Sessions today** | Metric | Cardinality of `session_id` | last 24h |
 | 2 | **Tool calls by agent** | Bar (vertical) | Count, x: `agent.keyword`, breakdown: `tool.keyword` | last 7d |
-| 3 | **Tokens in/out by model** | Bar (stacked) | Sum of `tokens_in` + `tokens_out`, x: `model.keyword` | last 7d |
-| 4 | **Cost per REQ-ID** | Table | Sum of `cost_usd`, group: `req_ids.keyword` | last 30d |
+| 3 | ~~Tokens in/out by model~~ | — | Requires OTel join — see `token-usage-tracking.md`. Don't build from this index. | — |
+| 4 | ~~Cost per REQ-ID~~ | — | Requires OTel join — see `token-usage-tracking.md`. Don't build from this index. | — |
 | 5 | **Rejection loop count by REQ-ID** | Table | Count where `agent:"reviewer" AND tool_status:"rejected"`, group: `req_ids.keyword` | last 30d |
 | 6 | **Average latency by agent** | Bar | Average of `latency_ms`, x: `agent.keyword` | last 7d |
 | 7 | **Errors timeline** | Line | Count where `error:*`, x: `@timestamp` (auto interval) | last 30d |
 | 8 | **Top files touched** | Table | Count, group: `files.keyword`, top 25 | last 30d |
-| 9 | **Per-PR audit trail** | Table | Group: `pr_number`, `agent.keyword`, `tool.keyword`; sum tokens | filter on PR number |
+| 9 | **Per-PR audit trail** | Table | Group: `pr_number`, `agent.keyword`, `tool.keyword`; sum latency_ms | filter on PR number |
 | 10 | **Coverage check** | Saved search | All events where `req_ids.keyword: REQ-AUTH-014` (parameterise) | last 90d |
 
 ## 4. Saved searches (most-used)
@@ -76,7 +76,15 @@ curl -s -k -u "$ELASTIC_USERNAME:$ELASTIC_PASSWORD" \
 
 ## 7. What gets logged (and what doesn't)
 
-- ✅ Agent, model, tool, files touched, REQ-IDs, Jira keys, scenario tags, token counts, latency, errors, commit/branch/PR/actor.
-- ❌ Prompts, completions, file contents, user messages. These are explicitly redacted (`user_message_redacted: true`). Filebeat config also drops `message`, `prompt`, and `completion` fields if they ever appear, as defence in depth.
+- ✅ Agent, model, tool, files touched, REQ-IDs, Jira keys, scenario tags, latency, errors, commit/branch/PR/actor.
+- ❌ Token counts (`tokens_in`, `tokens_out`, `cost_usd`) are NOT populated by this pipeline. Copilot Chat in VS Code does not expose per-turn token counts to custom agents. For token tracking use the official paths described in `infra/token-usage-tracking.md` (enable OTel, or read CLI session-state, or use the GitHub Copilot Enterprise usage API).
+- ❌ Prompts, completions, file contents, user messages. Explicitly redacted (`user_message_redacted: true`). Filebeat also drops `message`, `prompt`, `completion` fields as defence in depth.
 
 If you need prompt-level inspection for a specific incident, enable it per-session via an env var, not globally.
+
+## 8. Token enrichment — see separate guide
+
+Earlier versions of this bundle shipped an `enrich_audit_with_tokens.py` script that assumed Copilot Chat wrote per-turn JSON logs to predictable paths. **That assumption was wrong** — those paths don't reliably exist with the expected schema. The script has been removed.
+
+The correct approach is documented in `infra/token-usage-tracking.md`. Summary: enable Copilot's OTel export (the official path) and either write to a file (per-developer) or send to an OTLP Collector that fans out to Langfuse / Application Insights / Grafana (centralised). Join to this audit by `session_id` and `actor`.
+

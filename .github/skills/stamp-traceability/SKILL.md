@@ -9,6 +9,16 @@ disable-model-invocation: false
 
 Every artifact carries the IDs that link it back to `docs/requirements.md` and to the Jira ticket. The Reviewer rejects any artifact missing its stamp.
 
+## When to use
+- The Implementer is writing or amending code, tests, commit messages, or PR titles/bodies tied to a REQ-ID.
+- Retrofitting older code that predates the REQ-ID convention.
+- The Reviewer needs the source of truth for what counts as a valid stamp.
+
+## When NOT to use
+- Pure formatting / whitespace changes with no semantic content.
+- Refactors with no observable behaviour change AND no test changes.
+- Generated code (auto-formatters, scaffolders) — exempt by convention.
+
 ## Conventions by artifact type
 
 ### Commit messages

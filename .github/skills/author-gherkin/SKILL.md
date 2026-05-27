@@ -9,6 +9,16 @@ disable-model-invocation: false
 
 `.feature` files are the executable source of truth. Every scenario maps to at least one test; the Reviewer enforces this.
 
+## When to use
+- The Requirements Gatherer is authoring a new `.feature` file from user input.
+- A user invoked `/author-gherkin` explicitly to format an existing draft.
+- An existing `.feature` file needs scenarios added (without changing the REQ-ID — that belongs with the Requirements Gatherer).
+
+## When NOT to use
+- The user is editing prose docs (README, ADR) — those have their own templates.
+- The feature already exists with the right scenario tags and no behaviour change is requested.
+- The user is asking for a code change against an existing REQ-ID → the Planner runs, not this skill.
+
 ## File location
 
 `features/<area>/<short-kebab-name>.feature`

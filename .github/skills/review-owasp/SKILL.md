@@ -10,6 +10,15 @@ allowed-tools: ['search', 'usages', 'changes', 'problems']
 
 Walk the diff with this checklist. Findings are formatted per the Reviewer's output spec (`STATUS: REJECTED` + `FINDINGS` block).
 
+## When to use
+- The Reviewer is walking a diff submitted by the Implementer.
+- A user invoked `/review-owasp` on a branch outside the normal flow (e.g. auditing legacy code).
+
+## When NOT to use
+- The diff is documentation-only — no security surface to review.
+- The diff is purely generated output (lock files, auto-formatted code).
+- The user wants a code review for style / architecture — different skill.
+
 ## Severity rule
 
 Anything in this skill that fails is **at least `major`**. Anything tagged "blocking" below is `blocking`. There is no `minor` in security.

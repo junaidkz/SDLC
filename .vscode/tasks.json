@@ -1,0 +1,98 @@
+{
+  "// Description": "VS Code tasks that the Copilot agents invoke via runTasks. This is what wires the deterministic scripts to the LLM agents — without these task definitions, the runTasks calls in the agent prompts have nothing to run. Adjust paths if your orchestrator scripts live somewhere other than ./scripts/.",
+
+  "version": "2.0.0",
+  "tasks": [
+
+    {
+      "label": "audit:log",
+      "type": "shell",
+      "command": "python",
+      "args": ["${workspaceFolder}/scripts/audit_log.py", "${input:auditArgs}"],
+      "presentation": { "reveal": "never", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "audit:ship",
+      "type": "shell",
+      "command": "python",
+      "args": ["${workspaceFolder}/scripts/ship_audit_to_es.py"],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "discover:query-catalog",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/.github/skills/discover-application/scripts/query_catalog.py",
+        "--app", "${input:appName}",
+        "--config", "${workspaceFolder}/.copilot/catalog.json"
+      ],
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "scan:repo",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/.github/skills/scan-repo/scripts/scan_repo.py",
+        "--root", "${input:repoRoot}",
+        "--name", "${input:repoName}"
+      ],
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "// --- VALIDATOR TASKS — called by agents before firing handoffs ---": "",
+
+      "label": "validate:req-id",
+      "type": "shell",
+      "command": "python",
+      "args": ["${workspaceFolder}/scripts/validators/validate_req_id.py", "${input:reqId}", "--json"],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "validate:plan",
+      "type": "shell",
+      "command": "python",
+      "args": ["${workspaceFolder}/scripts/validators/validate_plan.py", "${input:planPath}", "--json"],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "validate:handoff",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/scripts/validators/validate_handoff.py",
+        "--kind", "${input:handoffKind}",
+        "--payload", "${input:handoffPayloadPath}"
+      ],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    }
+
+  ],
+  "inputs": [
+    { "id": "auditArgs",          "type": "promptString", "description": "audit_log.py CLI args (built by the emit-audit skill)" },
+    { "id": "appName",            "type": "promptString", "description": "application name (e.g. payments-api)" },
+    { "id": "repoRoot",           "type": "promptString", "description": "absolute path to the repo being scanned" },
+    { "id": "repoName",           "type": "promptString", "description": "short repo name (matches application.json)" },
+    { "id": "reqId",              "type": "promptString", "description": "REQ-AREA-NNN" },
+    { "id": "planPath",           "type": "promptString", "description": "path to plan file under .copilot/plans/" },
+    { "id": "handoffKind",        "type": "pickString",
+      "options": ["RequirementsHandoff", "PlanHandoff", "ReviewVerdict", "AuditEvent"],
+      "description": "which schema to validate against"
+    },
+    { "id": "handoffPayloadPath", "type": "promptString", "description": "path to JSON payload, or '-' for stdin" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "// Description": "Add these lines to your VS Code user settings.json (or workspace .vscode/settings.json) to capture per-request token usage and tool calls from Copilot Chat. This is the OFFICIAL path - Microsoft docs as of May 2026. The OTel signals follow GenAI Semantic Conventions, so they work with any OTLP-compatible backend.",
+
+  "// === OPTION A: write to a local file ===": "",
+  "// Use when you want a per-developer log on disk. The audit_log.py JSONL files and this OTel file can be joined by session id + timestamp.",
+  "github.copilot.chat.otel.enabled": true,
+  "github.copilot.chat.otel.exporterType": "file",
+  "github.copilot.chat.otel.outfile": "${env:HOME}/.copilot/otel/copilot-otel.jsonl",
+
+  "// === OPTION B (alternative): send to an OTel Collector ===": "",
+  "// Use when the org has an OTel Collector that fans out to Langfuse, Application Insights, Grafana Tempo, etc. Comment out the file lines above and uncomment these.",
+  "// github.copilot.chat.otel.enabled": true,
+  "// github.copilot.chat.otel.otlpEndpoint": "http://otel-collector.internal:4318",
+
+  "// For OTLP headers (auth tokens), set OTEL_EXPORTER_OTLP_HEADERS as an env var, NOT here. Example: OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer xxx": ""
+}

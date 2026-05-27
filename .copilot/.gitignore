@@ -1,0 +1,15 @@
+# Generated per session by the agents — re-discovered when stale or re-written each turn.
+application.json
+context.json
+audit/
+
+# Persisted handoff artifacts (plans, diff summaries, review findings).
+# These ARE the work product passed between agents — the handoff prompts reference these paths.
+# Decide per team whether to commit them (audit trail) or gitignore them (less repo noise).
+# Default: gitignore. Audit events in Elasticsearch already capture the same info.
+plans/
+diffs/
+reviews/
+
+# Local clone of org orchestrator (only used with Option A wiring).
+orchestrator/

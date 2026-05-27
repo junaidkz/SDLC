@@ -10,6 +10,15 @@ allowed-tools: ['search', 'editFiles', 'changes']
 
 The RTM (`docs/traceability.md`) is the append-only ledger that makes any REQ-ID queryable end-to-end. Add rows here **only after** the Reviewer returns `STATUS: APPROVED`.
 
+## When to use
+- The Reviewer has returned `STATUS: APPROVED` and the Implementer is preparing the commit.
+- A user invoked `/append-rtm` to backfill traceability for previously-merged work that lacked it.
+
+## When NOT to use
+- Before the Reviewer has approved — appending now causes churn when findings come back.
+- For draft / experimental commits that won't ship.
+- To edit historical rows. Append-only; supersede instead.
+
 ## Schema
 
 ```
