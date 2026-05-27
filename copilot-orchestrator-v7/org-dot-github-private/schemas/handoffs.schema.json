@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Inter-agent handoff schemas",
+  "description": "Karpathy: 'You are programming an organization.' Each agent hands off a typed payload to the next. These schemas document the contract — the Reviewer rejects payloads that don't conform.",
+
+  "$defs": {
+
+    "RequirementsHandoff": {
+      "description": "Requirements Gatherer → Planner",
+      "type": "object",
+      "required": ["req_ids", "feature_files", "user_approved"],
+      "properties": {
+        "req_ids":       { "type": "array", "items": { "type": "string", "pattern": "^REQ-[A-Z]+-\\d{3}$" }, "minItems": 1 },
+        "jira_keys":     { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]+-\\d+$|^pending$" } },
+        "feature_files": { "type": "array", "items": { "type": "string", "pattern": "^features/.+\\.feature$" }, "minItems": 1 },
+        "user_approved": { "const": true, "description": "Must be true; the gate is mandatory" }
+      }
+    },
+
+    "PlanHandoff": {
+      "description": "Planner → Implementer",
+      "type": "object",
+      "required": ["req_ids", "feature_files", "steps", "ac_test_mapping", "user_approved"],
+      "properties": {
+        "req_ids":       { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "feature_files": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "affected_surface": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "change"],
+            "properties": {
+              "path":   { "type": "string" },
+              "change": { "enum": ["new", "modify", "delete"] },
+              "symbol": { "type": "string" }
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["n", "ac", "action", "path"],
+            "properties": {
+              "n":      { "type": "integer", "minimum": 1 },
+              "ac":     { "type": "string", "pattern": "^AC-\\d+$" },
+              "action": { "type": "string" },
+              "path":   { "type": "string" }
+            }
+          },
+          "minItems": 1
+        },
+        "ac_test_mapping": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ac", "scenario_tag", "test_file", "test_name"],
+            "properties": {
+              "ac":           { "type": "string", "pattern": "^AC-\\d+$" },
+              "scenario_tag": { "type": "string", "pattern": "^@.+$" },
+              "test_file":    { "type": "string" },
+              "test_name":    { "type": "string" }
+            }
+          }
+        },
+        "new_dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "version", "reason"],
+            "properties": {
+              "name":          { "type": "string" },
+              "version":       { "type": "string" },
+              "reason":        { "type": "string" },
+              "proposed_adr":  { "type": "string", "pattern": "^ADR-\\d{4}$" }
+            }
+          },
+          "description": "Should usually be empty. Implementer invokes propose-adr for each entry before installing."
+        },
+        "out_of_scope":  { "type": "array", "items": { "type": "string" } },
+        "user_approved": { "const": true }
+      }
+    },
+
+    "ReviewVerdict": {
+      "description": "Reviewer → Implementer (or → done)",
+      "type": "object",
+      "required": ["status", "req_ids"],
+      "properties": {
+        "status":   { "enum": ["APPROVED", "REJECTED"] },
+        "req_ids":  { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "jira_keys":{ "type": "array", "items": { "type": "string" } },
+        "scenarios_verified": { "type": "array", "items": { "type": "string", "pattern": "^@.+$" } },
+        "tests_run":          { "type": "array", "items": { "type": "string" } },
+        "security_checks":    { "type": "object", "properties": {
+          "passed": { "type": "boolean" },
+          "items":  { "type": "array", "items": { "type": "string" } }
+        }},
+        "audit_events_emitted": { "type": "integer", "minimum": 0 },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["severity", "category", "summary"],
+            "properties": {
+              "severity": { "enum": ["blocking", "major", "minor"] },
+              "category": { "enum": ["AC", "SEC", "TRACE", "PLAN", "AUDIT", "QUALITY"] },
+              "summary":  { "type": "string" },
+              "where":    { "type": "string" },
+              "why":      { "type": "string" },
+              "fix":      { "type": "string" }
+            }
+          }
+        },
+        "acs_uncovered":            { "type": "array", "items": { "type": "string" } },
+        "packages_without_adr":     { "type": "array", "items": { "type": "string" } },
+        "notes":                    { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "REJECTED" } } },
+          "then": { "required": ["findings"], "properties": { "findings": { "minItems": 1 } } }
+        }
+      ]
+    },
+
+    "AuditEvent": {
+      "description": "Every agent → JSONL → Elasticsearch (copilot-audit-*).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["@timestamp", "session_id", "agent", "model", "phase"],
+      "properties": {
+        "@timestamp":            { "type": "string", "format": "date-time" },
+        "session_id":            { "type": "string" },
+        "step_id":               { "type": "string" },
+        "agent":                 { "enum": ["initiator", "orchestrator", "requirements-gatherer", "planner", "implementer", "reviewer"] },
+        "model":                 { "type": "string" },
+        "phase":                 { "enum": ["start", "end"] },
+        "tool":                  { "type": "string" },
+        "tool_status":           { "enum": ["ok", "error", "rejected", "pending", ""] },
+        "files":                 { "type": "array", "items": { "type": "string" } },
+        "args_hash":             { "type": "string" },
+        "req_ids":               { "type": "array", "items": { "type": "string" } },
+        "jira_keys":             { "type": "array", "items": { "type": "string" } },
+        "scenario_tags":         { "type": "array", "items": { "type": "string" } },
+        "commit_sha":            { "type": "string" },
+        "pr_number":             { "type": "integer" },
+        "branch":                { "type": "string" },
+        "actor":                 { "type": "string" },
+        "repo":                  { "type": "string" },
+        "tokens_in":             { "type": "integer", "minimum": 0 },
+        "tokens_out":            { "type": "integer", "minimum": 0 },
+        "latency_ms":            { "type": "integer", "minimum": 0 },
+        "cost_usd":              { "type": "number", "minimum": 0 },
+        "error":                 { "type": "string" },
+        "user_message_redacted": { "type": "boolean" }
+      }
+    }
+  }
+}

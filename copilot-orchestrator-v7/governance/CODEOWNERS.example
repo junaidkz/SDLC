@@ -1,0 +1,39 @@
+# CODEOWNERS for the org's Copilot orchestrator repo (.github-private).
+# Replace @your-org/<team> placeholders with your actual GitHub team handles.
+# CODEOWNERS uses git-glob-like syntax; later patterns override earlier ones.
+
+# ─── Default owner: platform / DevX team ──────────────────────────────────
+*                                @your-org/copilot-platform-team
+
+# ─── Agent definitions: platform team only ────────────────────────────────
+/agents/                         @your-org/copilot-platform-team
+
+# ─── Skills: platform team owns format; subject-matter teams co-own scope ─
+/skills/                         @your-org/copilot-platform-team
+/skills/review-owasp/            @your-org/copilot-platform-team @your-org/security-team
+/skills/propose-adr/             @your-org/copilot-platform-team @your-org/architecture-team
+/skills/discover-application/    @your-org/copilot-platform-team @your-org/devops-team
+
+# ─── Schemas: changes are API-breaking by nature ──────────────────────────
+/schemas/                        @your-org/copilot-platform-team
+
+# ─── Instructions: dual ownership ──────────────────────────────────────────
+/copilot-instructions.md         @your-org/copilot-platform-team
+/instructions/security.*         @your-org/copilot-platform-team @your-org/security-team
+/instructions/token-budget.*     @your-org/copilot-platform-team @your-org/finops-team
+
+# ─── Scripts: platform owns code; security reviews privileged ones ────────
+/scripts/                        @your-org/copilot-platform-team
+/scripts/audit_log.py            @your-org/copilot-platform-team @your-org/security-team
+/scripts/create_jira_from_feature.py  @your-org/copilot-platform-team @your-org/security-team
+/scripts/enrich_audit_with_tokens.py  @your-org/copilot-platform-team @your-org/finops-team
+
+# ─── Infra: ops team ──────────────────────────────────────────────────────
+/infra/                          @your-org/ops-team
+/infra/elastic-index-template.json @your-org/ops-team @your-org/copilot-platform-team
+
+# ─── Docs ──────────────────────────────────────────────────────────────────
+/docs/                           @your-org/copilot-platform-team
+
+# ─── Canary apps: anyone can propose, platform team must approve ───────────
+/governance/canary-apps/         @your-org/copilot-platform-team

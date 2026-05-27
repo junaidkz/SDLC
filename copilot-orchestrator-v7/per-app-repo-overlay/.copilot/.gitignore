@@ -1,0 +1,11 @@
+# Generated per session by the Initiator agent. Re-discovered when stale.
+.copilot/application.json
+.copilot/context.json
+
+# Audit JSONL is shipped to Elasticsearch; not source-controlled.
+.copilot/audit/
+~/.copilot/audit/
+
+# Local clone of the orchestrator (Option A wiring only). For Option B
+# (per-machine clone in $ORCH_HOME), this line has no effect.
+.copilot/orchestrator/

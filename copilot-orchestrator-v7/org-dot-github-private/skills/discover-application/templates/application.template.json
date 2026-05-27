@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "generated_at": "<ISO-8601 timestamp>",
+  "application": {
+    "name": "<application name as the user thinks of it>",
+    "owner": "<team or person; may be 'unknown'>",
+    "source": "backstage | servicenow | custom | manual",
+    "catalog_url": "<optional, link back to the catalog entry>"
+  },
+  "repos": [
+    {
+      "name": "<short repo name>",
+      "url": "<git URL — https or ssh>",
+      "default_branch": "main",
+      "local_path": "<absolute path if already cloned, else null>",
+      "role": "primary | supporting | tooling | docs",
+      "language_hint": "<optional, helps scan-repo prioritise>"
+    }
+  ],
+  "_meta": {
+    "_role_values": "primary = main app code; supporting = sub-services/frontends in the same app; tooling = build/infra/scripts repos; docs = documentation-only repos",
+    "_idempotency": "scan-repo writes per-repo entries to .copilot/context.json keyed by name; re-running this skill replaces application.json entirely"
+  }
+}

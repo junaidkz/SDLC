@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-22T10:00:00Z",
+  "application": {
+    "name": "canary-payments-api",
+    "owner": "copilot-platform-team",
+    "source": "manual"
+  },
+  "repos": [
+    {
+      "name": "canary-payments-api",
+      "url": "https://github.com/your-org/canary-payments-api",
+      "default_branch": "main",
+      "local_path": "/tmp/canary-payments-api",
+      "role": "primary"
+    },
+    {
+      "name": "canary-payments-frontend",
+      "url": "https://github.com/your-org/canary-payments-frontend",
+      "default_branch": "main",
+      "local_path": "/tmp/canary-payments-frontend",
+      "role": "supporting"
+    }
+  ]
+}

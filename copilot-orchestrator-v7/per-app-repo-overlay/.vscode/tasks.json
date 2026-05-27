@@ -1,0 +1,78 @@
+{
+  "// Description": "VS Code tasks that the org-wide Copilot agents invoke via runTasks. The agents themselves live in the org's .github-private repo; only the local wiring lives here.",
+
+  "// Configure ORCH_HOME": "Either: (a) clone the org agents repo to ~/.copilot/orchestrator and set ORCH_HOME=~/.copilot/orchestrator in your shell; or (b) keep them as a submodule under .copilot/orchestrator/ here. Pick the form that matches your team's wiring choice (Option A vs B in the .github-private README).",
+
+  "version": "2.0.0",
+  "tasks": [
+
+    {
+      "label": "audit:log",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${env:ORCH_HOME}/scripts/audit_log.py",
+        "${input:auditArgs}"
+      ],
+      "presentation": { "reveal": "never", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "discover:query-catalog",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${env:ORCH_HOME}/skills/discover-application/scripts/query_catalog.py",
+        "--app", "${input:appName}",
+        "--config", "${workspaceFolder}/.copilot/catalog.json"
+      ],
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "scan:repo",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${env:ORCH_HOME}/skills/scan-repo/scripts/scan_repo.py",
+        "--root", "${input:repoRoot}",
+        "--name", "${input:repoName}"
+      ],
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "audit:ship",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${env:ORCH_HOME}/scripts/ship_audit_to_es.py"
+      ],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "audit:enrich-tokens",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${env:ORCH_HOME}/scripts/enrich_audit_with_tokens.py",
+        "--source", "local",
+        "--rewrite"
+      ],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    }
+
+  ],
+  "inputs": [
+    { "id": "auditArgs", "type": "promptString", "description": "Audit log arguments (the emit-audit skill builds these)" },
+    { "id": "appName",   "type": "promptString", "description": "Application name (e.g. payments-api)" },
+    { "id": "repoRoot",  "type": "promptString", "description": "Absolute path to the repo being scanned" },
+    { "id": "repoName",  "type": "promptString", "description": "Short repo name (matches application.json)" }
+  ]
+}

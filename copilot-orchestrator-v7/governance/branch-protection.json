@@ -1,0 +1,33 @@
+{
+  "_description": "Apply with `gh api -X PUT /repos/<org>/.github-private/branches/main/protection --input branch-protection.json`. Adjust team handles to match your org.",
+
+  "required_status_checks": {
+    "strict": true,
+    "contexts": [
+      "validate-agents",
+      "validate-skills",
+      "validate-schemas",
+      "canary-orchestrator-flow",
+      "lint-python",
+      "test-python"
+    ]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 2,
+    "require_code_owner_reviews": true,
+    "dismiss_stale_reviews": true,
+    "require_last_push_approval": true
+  },
+  "restrictions": {
+    "users": [],
+    "teams": ["copilot-platform-team"],
+    "apps": []
+  },
+  "required_linear_history": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "required_conversation_resolution": true,
+  "lock_branch": false,
+  "block_creations": false
+}
