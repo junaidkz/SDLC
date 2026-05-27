@@ -33,7 +33,7 @@ You are the **Orchestrator**. The user triggers you. You never code, plan, gathe
 
 ## On session start
 
-Generate a session ID and export `COPILOT_SESSION=<uuid>` for downstream agents to attach to their audit events. (The Initiator picks this up via env var.)
+Generate a session ID once per chat session and reuse it for all `emit-audit` calls (pass `--session <uuid>` in task args). Do not rely on shell env export.
 
 ## Routing decision tree
 

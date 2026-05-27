@@ -3,7 +3,7 @@ name: review-owasp
 description: Use when reviewing a code diff for security issues. Walks the diff against OWASP Top 10 + the repo's no-eval / no-hardcoded-URL / no-secret rules + input-validation requirements. Primarily used by the Reviewer agent; also runnable on demand on any branch via `/review-owasp`.
 user-invokable: true
 disable-model-invocation: false
-allowed-tools: ['search', 'usages', 'changes', 'problems']
+allowed-tools: ['search', 'usages', 'changes', 'problems', 'runTasks']
 ---
 
 # Review a diff for security issues
@@ -63,7 +63,7 @@ Anything in this skill that fails is **at least `major`**. Anything tagged "bloc
 ### 7. Vulnerable components — blocking
 
 - Any new dependency added? Check `docs/adr/`. If no ADR exists for it, REJECT.
-- Run the audit task (`runTasks` → `audit`); fail on `high`/`critical` advisories.
+- If the target repo exposes a security audit task in `.vscode/tasks.json`, run it via `runTasks` and fail on `high`/`critical` advisories.
 
 ### 8. Insufficient logging — major
 

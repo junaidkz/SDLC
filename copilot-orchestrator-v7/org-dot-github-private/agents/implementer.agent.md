@@ -53,7 +53,7 @@ For each finding: one-line fix, apply, re-run the relevant test via `runTasks`. 
 
 - [ ] Every plan step has a corresponding diff.
 - [ ] Every AC has at least one passing test referencing its scenario tag.
-- [ ] `runTasks` for `build`, `test_unit`, `lint`, `audit` all pass.
+- [ ] Required verification tasks for the target repo (for example `build`, `test`, `lint`, `audit`) are executed via `runTasks` and pass, or are explicitly marked `skipped` with a reason.
 - [ ] No packages installed without an accepted ADR.
 - [ ] No secrets, no `eval`/`exec` on untrusted strings, no hard-coded outbound URLs.
 - [ ] Reviewer approved → invoke `append-rtm` to update `docs/traceability.md` → commit (RTM update part of the same commit).

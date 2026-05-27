@@ -31,7 +31,7 @@ Refs: PLAT-1234
 ```
 
 - Subject: `[<REQ-ID>] <imperative summary, <72 chars>`
-- Body MUST include `Refs: <JIRA-KEY>` on its own line (the GitHub Action also writes this to PR body).
+- Body MUST include `Refs: <JIRA-KEY>` on its own line.
 - Multiple REQ-IDs: comma-separated inside the brackets, multiple `Refs:` lines.
 
 ### PR titles
@@ -40,7 +40,7 @@ Refs: PLAT-1234
 [REQ-AUTH-014] Refresh-token rotation
 ```
 
-PR body must include `Refs: PLAT-1234` somewhere (the workflow appends this automatically when missing).
+PR body must include `Refs: PLAT-1234` somewhere.
 
 ### C# / .NET — class, method, or record
 

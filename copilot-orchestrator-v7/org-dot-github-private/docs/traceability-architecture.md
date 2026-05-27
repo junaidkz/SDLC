@@ -16,7 +16,7 @@ Three layers. All three are needed for end-to-end traceability.
                                   │
 ┌─────────────────────────────────────────────────────────────────┐
 │ Layer 1: Intent → requirement                                   │
-│   Gherkin .feature + Jira (created by GitHub Action via REST)   │
+│   Gherkin .feature + Jira (created by Requirements Gatherer)     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -25,12 +25,12 @@ Three layers. All three are needed for end-to-end traceability.
 ## Layer 1 — Intent → requirement
 
 - **Author**: the Requirements Gatherer agent writes `features/<area>/*.feature` with `jira: pending` in the frontmatter and a row in `docs/requirements.md`.
-- **Jira creation**: `.github/workflows/create-jira-from-feature.yml` runs on PR open/synchronise, detects new/changed feature files with `jira: pending`, calls Jira REST (`POST /rest/api/2/issue`) using a PAT in GitHub Secrets, and commits the resulting key back into the feature file + index.
-- **PR linkage**: the workflow appends `Refs: <key>` to the PR body. Jira's GitHub integration ("Smart Commits") picks this up and shows the PR on the issue automatically.
+- **Jira creation**: the Requirements Gatherer runs task `jira:create-from-pending`, which executes `scripts/create_jira_from_feature.py`, calls Jira REST (`POST /rest/api/2/issue`), and rewrites the key into both the feature file and requirements index.
+- **PR linkage**: Implementer and Reviewer enforce `Refs: <key>` in commit bodies and PR body.
 
-No MCP. No runtime dependency on an external service from the agent. Every Jira-create call is a CI run with a log.
+No MCP. Jira creation remains deterministic by using a checked-in script invoked by the agent task harness.
 
-**Idempotency**: the workflow only acts when frontmatter is `jira: pending`. Re-running an agent session never creates duplicate tickets.
+**Idempotency**: creation only acts when frontmatter is `jira: pending`. Re-running the task does not duplicate existing linked items.
 
 ---
 

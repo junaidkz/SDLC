@@ -2,10 +2,11 @@
 """
 create_jira_from_feature.py
 
-For each .feature file passed on the CLI, parse the leading frontmatter.
+For each .feature file passed on the CLI (or auto-discovered under features/),
+parse the leading frontmatter.
 If `jira: pending`, create a Jira issue via REST and rewrite the file
 (and docs/requirements.md) with the new key. Append the key to
-.jira-keys-created so the workflow can list them in the PR body.
+.jira-keys-created for downstream tooling.
 
 No third-party dependencies — stdlib only.
 Env vars required:
@@ -125,7 +126,11 @@ def update_requirements_index(req_id: str, key: str) -> None:
 
 def main(argv: list[str]) -> int:
     created: list[str] = []
-    for arg in argv:
+    if argv:
+        args = argv
+    else:
+        args = [str(p) for p in sorted(Path("features").rglob("*.feature"))]
+    for arg in args:
         path = Path(arg)
         if not path.exists():
             print(f"skip (missing): {path}")

@@ -39,7 +39,7 @@ copilot-instructions.md             # root project-wide rules
 scripts/                            # audit_log, ship_audit_to_es, enrich_audit_with_tokens, create_jira_from_feature
 infra/                              # ES index template, Filebeat config, Kibana setup
 docs/workflow.svg + workflow.md     # the diagram
-.github/workflows/create-jira-from-feature.yml
+scripts/create_jira_from_feature.py # invoked by jira:create-from-pending
 README.md                           # owner guide for the platform team
 ```
 
@@ -112,7 +112,7 @@ When an application spans repos A, B, C:
 3. The Planner reads `context.json.repos[*]` and produces a plan whose **Affected Surface** spans multiple repos — file paths qualified by repo (`payments-api-frontend/src/auth.ts`).
 4. The Implementer edits across repos. Audit events carry the `repo` field per touched file.
 5. The Reviewer reads the same `context.json`. The RTM in the primary repo accumulates rows that may reference files in any of A, B, C.
-6. Jira-creation GHA runs on the primary repo's PR (the one with `.feature` files), creates one Jira issue covering all the cross-repo changes, references it from each repo's PR body via `Refs: PLAT-1234`.
+6. Requirements Gatherer runs `jira:create-from-pending` in the primary repo (the one with `.feature` files), creates one Jira issue covering all the cross-repo changes, and each repo's PR body references it via `Refs: PLAT-1234`.
 
 The "primary" repo is the one with `features/` and `docs/requirements.md`. By convention it's the backend or main API repo; the application.json's `role: "primary"` field marks it. Frontend / shared-lib PRs in this flow reference the primary repo's REQ-ID and Jira key in commits, without owning the spec themselves.
 
@@ -151,7 +151,7 @@ App repos consume by submodule (Option A), per-developer clone (Option B), or pa
 Every change to `.github-private` follows the flow the orchestrator enforces on app code:
 
 1. Open a PR with a new `features/<area>/<name>.feature` carrying `REQ-ORCH-NNN`. Scenarios describe the new agent/skill behaviour.
-2. Jira-creation workflow attaches a Jira key.
+2. Requirements Gatherer runs `jira:create-from-pending` to attach a Jira key.
 3. CI (`validate-orchestrator`) runs:
    - YAML frontmatter validators on agents and skills.
    - Python compile + smoke tests.
@@ -159,7 +159,7 @@ Every change to `.github-private` follows the flow the orchestrator enforces on 
 4. CODEOWNERS approval.
 5. Tag on merge.
 
-The platform team is the first user of every change — if it breaks the meta-flow, it doesn't ship.
+ The platform team is the first user of every change — if it breaks the task-driven flow, it doesn't ship.
 
 ## Operational SLAs (starting point — tune to your org)
 

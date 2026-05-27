@@ -1,6 +1,6 @@
 ---
 name: emit-audit
-description: "Use whenever an agent step starts or ends. Emits a single JSONL audit event via the `audit:log` VS Code task to `~/.copilot/audit/<session>.jsonl`. Token counts (tokens_in/out, cost_usd) are emitted as 0 in real time — they are back-filled later by enrich_audit_with_tokens.py from Copilot's local logs or the org-level usage API. Every agent must invoke this skill at step boundaries."
+description: "Use whenever an agent step starts or ends. Emits a single JSONL audit event via the `audit:log` VS Code task to `~/.copilot/audit/<session>.jsonl`. Token counts (tokens_in/out, cost_usd) are emitted as 0 in real time in VS Code Copilot and should be analyzed from OTel telemetry separately. Every agent must invoke this skill at step boundaries."
 user-invokable: false
 disable-model-invocation: false
 allowed-tools: ['runTasks']
@@ -43,15 +43,7 @@ Inside a VS Code Copilot chat, **you cannot see your own token counts**. There i
 
 Do not estimate, do not guess from character counts, do not make them up. **Leave `tokens-in` and `tokens-out` at their default of 0.** The fields exist in the schema so they can be back-filled.
 
-Tokens are filled in later by `scripts/enrich_audit_with_tokens.py`, which joins audit events against an authoritative usage source:
-
-| Source | Granularity | Setup |
-|---|---|---|
-| Local Copilot session logs | Per-turn, per-developer | Zero — read from `~/.config/github-copilot/logs/` (Linux), `~/Library/Logs/github-copilot/` (macOS), `%APPDATA%\github-copilot\logs\` (Windows) |
-| GitHub Copilot Enterprise usage API | Per-day aggregates today; per-developer on Enterprise tenants | `GITHUB_TOKEN` (with `copilot:read`) + `GITHUB_ORG` |
-| Direct LLM API (when not using Copilot chat) | Per-turn, exact | Read `response.usage` from the API call and pass `--tokens-in N --tokens-out N` to `audit_log.py` |
-
-The third case is the only one where an agent can legitimately pass non-zero counts at emit time. That happens when the orchestrator drives a model via API (e.g. for batch evals). In normal Copilot chat use, leave them 0 and run enrichment as a scheduled job.
+For token and cost reporting in this root bundle, use OTel as documented in `infra/token-usage-tracking.md` and `infra/vscode-settings-otel.jsonc`.
 
 ## How to invoke
 
@@ -75,24 +67,7 @@ Note no `--tokens-in/--tokens-out`. Skip those flags.
 
 ## Enrichment cadence (recommended)
 
-Run as a scheduled job — hourly or daily:
-
-```bash
-# Local source (works on every dev machine)
-python scripts/enrich_audit_with_tokens.py --source local --rewrite
-
-# Then ship the rewritten JSONL to Elasticsearch (the regular path)
-python scripts/ship_audit_to_es.py
-```
-
-Or, for org-wide visibility on GitHub Enterprise:
-
-```bash
-python scripts/enrich_audit_with_tokens.py --source github --reindex \
-    --since "$(date -u -d '1 day ago' +%FT%TZ)"
-```
-
-`enrich_audit_with_tokens.py` is idempotent: events with `tokens_in > 0` are skipped on re-runs.
+Use one of the documented telemetry paths in `infra/token-usage-tracking.md` for token analytics, and continue shipping audit events with `scripts/ship_audit_to_es.py`.
 
 ## Failure mode
 

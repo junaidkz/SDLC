@@ -51,8 +51,7 @@ The orchestrator described in `docs/workflow.svg` spans multiple repos (a Planne
 │   ├── workflow.svg
 │   ├── workflow.md
 │   └── traceability-architecture.md
-└── .github/workflows/
-    └── create-jira-from-feature.yml     # runs on PRs *in this repo*; see CODEOWNERS
+└── .github/workflows/                    # optional governance workflows
 ```
 
 ## What lives here vs in the app repos
@@ -117,7 +116,7 @@ Both the **org bundle** here and the **per-app-repo overlay** support all three.
 The same ceremony the agents enforce on app code applies to changes here:
 
 1. **Open a `.feature` file in `features/`** describing the change to the orchestrator (yes, even meta-changes). REQ-ID like `REQ-ORCH-NNN`.
-2. **Open a PR**. The Jira-creation workflow attaches a Jira key.
+2. **Run task `jira:create-from-pending`** to create and stamp the Jira key, then open a PR.
 3. **Eat your own dog food**: a draft Implementer/Reviewer run on a sample app demonstrating the change behaves as expected. Attach the audit JSONL to the PR.
 4. **CODEOWNERS approval** from `copilot-platform-team`.
 5. **Bump the version tag** on merge. App repos that pin a specific tag can opt in to upgrades; ones tracking `main` get changes immediately.

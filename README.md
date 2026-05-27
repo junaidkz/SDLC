@@ -1,6 +1,6 @@
 # Copilot Agent Orchestrator v5 — Karpathy-aligned, multi-repo, progressive disclosure
 
-Drop-in bundle for VS Code GitHub Copilot. Six agents, eight skills (with `references/` + `scripts/` subfolders for progressive disclosure), structured JSON-Schema handoffs between agents, multi-repo aware, two human gates, BDD-first requirements, Jira via GitHub Actions, full audit trail in Elasticsearch + Kibana. No MCP.
+Drop-in bundle for VS Code GitHub Copilot. Six agents, eight skills (with `references/` + `scripts/` subfolders for progressive disclosure), structured JSON-Schema handoffs between agents, multi-repo aware, two human gates, BDD-first requirements, Jira via agent task execution, full audit trail in Elasticsearch + Kibana. No MCP.
 
 ![Workflow diagram](docs/workflow.svg)
 
@@ -78,7 +78,7 @@ The **`scan-repo`** skill then iterates the resolved repos, scans each with a de
   schemas/
     handoffs.schema.json             # JSON-Schema for every inter-agent payload
   workflows/
-    create-jira-from-feature.yml
+    validate-orchestrator.yml          # governance/validation workflows
 docs/
   requirements.md
   traceability.md
@@ -90,7 +90,7 @@ infra/
   elastic-index-template.json
   filebeat.yml
   kibana-setup.md
-scripts/                             # repo-root scripts (called by GHA + audit pipeline)
+scripts/                             # repo-root scripts (called by agent tasks + audit pipeline)
   create_jira_from_feature.py
   audit_log.py
   ship_audit_to_es.py
@@ -98,7 +98,7 @@ scripts/                             # repo-root scripts (called by GHA + audit 
 
 ## Flow (one sentence)
 
-User triggers → Orchestrator routes → Initiator asks the app name + scans repos (first run only) → Requirements Gatherer writes a `.feature` → **user gate 1** → Planner writes a read-only plan → **user gate 2** → Implementer ⇄ Reviewer loop until APPROVED → commit + PR → GitHub Action creates Jira and writes the key back → RTM updated → done. Every step emits a JSONL audit event → Filebeat → Elasticsearch → Kibana.
+User triggers → Orchestrator routes → Initiator asks the app name + scans repos (first run only) → Requirements Gatherer writes a `.feature` and runs `jira:create-from-pending` → **user gate 1** → Planner writes a read-only plan → **user gate 2** → Implementer ⇄ Reviewer loop until APPROVED → commit + PR → RTM updated → done. Every step emits a JSONL audit event → Filebeat → Elasticsearch → Kibana.
 
 ## Models
 
@@ -142,7 +142,7 @@ Install Filebeat with `infra/filebeat.yml`, or schedule `scripts/ship_audit_to_e
 | Secrets in code / logs | Forbidden; strict ES mapping; redaction processors | `security.instructions.md`, `elastic-index-template.json` |
 | Untagged work | Reviewer rejects on missing stamps; CI gate | `stamp-traceability`, `review-owasp` |
 | Wasted tokens | Cached context, narrow tools, scripts > LLM for parsing, single-shot plans | `token-budget.instructions.md`, agent frontmatter, scripts |
-| Drift between Jira & feature | GHA is the only writer of Jira keys; idempotent on `pending` | `create-jira-from-feature.yml` |
+| Drift between Jira & feature | Requirements Gatherer runs `jira:create-from-pending`; script rewrites both files atomically on `pending` | `scripts/create_jira_from_feature.py` |
 | Lost agent action audit | JSONL per session → ES → Kibana with replay search | full audit stack |
 | Unstructured handoffs | JSON-Schema for every payload | `.github/schemas/handoffs.schema.json` |
 
@@ -152,4 +152,4 @@ Install Filebeat with `infra/filebeat.yml`, or schedule `scripts/ship_audit_to_e
 - GitHub.com cloud coding agent ignores `handoffs` and `model` frontmatter; this bundle is designed for IDE use.
 - Skill discovery is by description match — write descriptions with the words you'd say in chat.
 - Catalog provider support: Backstage + custom JSON. ServiceNow planned, not implemented.
-- Scripts are stdlib-only Python; no `pip install` anywhere.
+- Runtime scripts are stdlib-only Python. Governance validators in CI install `pyyaml`.

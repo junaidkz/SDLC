@@ -74,7 +74,7 @@ Loaded only when troubleshooting context.json or implementing a new agent that c
 
 ```jsonc
 {
-  "jira_creation":  ".github/workflows/create-jira-from-feature.yml",
+  "jira_creation":  "task:jira:create-from-pending -> scripts/create_jira_from_feature.py",
   "audit_shipping": "infra/filebeat.yml",
   "audit_index":    "copilot-audit"
 }

@@ -22,7 +22,7 @@ flowchart TD
     INIT["**Initiator**<br/>GPT-5 mini<br/>/scan-repo"]:::util
     CTX[(".copilot/context.json")]:::util
 
-    RG["**Requirements Gatherer**<br/>GPT-5 · interactive<br/>/author-gherkin<br/><i>writes .feature (jira: pending)</i>"]:::rg
+    RG["**Requirements Gatherer**<br/>GPT-5 · interactive<br/>/author-gherkin + jira:create-from-pending<br/><i>writes .feature + Jira key</i>"]:::rg
     GATE1{{"★ USER GATE 1<br/>approve requirements?"}}:::gate
 
     PLAN["**Planner**<br/>GPT-5 · READ-ONLY<br/><i>single-shot · plan + AC→test</i>"]:::plan
@@ -34,7 +34,6 @@ flowchart TD
     COMMIT[/"commit + PR<br/>[REQ-XXX] · Refs: PLAT-NN<br/>RTM updated"/]:::done
     DONE(["✓ DELIVERED"]):::done
 
-    GHA["**GitHub Action**<br/>create-jira-from-feature.yml<br/><i>on PR open · stdlib python</i>"]:::jira
     JIRA[("Jira<br/>PLAT-1234<br/>source of truth")]:::jira
 
     JSONL[("audit_log.py<br/>~/.copilot/audit/*.jsonl")]:::audit
@@ -61,9 +60,7 @@ flowchart TD
     REV ==>|APPROVED| COMMIT
     COMMIT -.-> DONE
 
-    COMMIT -.->|on PR open| GHA
-    GHA -.->|REST| JIRA
-    GHA -.->|writes jira key back| RG
+    RG -.->|REST via task| JIRA
 
     RG -.->|audit event| JSONL
     PLAN -.->|audit event| JSONL

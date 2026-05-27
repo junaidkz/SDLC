@@ -79,6 +79,15 @@
       ],
       "presentation": { "reveal": "silent" },
       "problemMatcher": []
+    },
+
+    {
+      "label": "jira:create-from-pending",
+      "type": "shell",
+      "command": "python",
+      "args": ["${workspaceFolder}/scripts/create_jira_from_feature.py"],
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
     }
 
   ],

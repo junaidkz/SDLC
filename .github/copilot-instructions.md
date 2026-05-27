@@ -46,7 +46,7 @@ The Initiator agent writes `.copilot/context.json` with detected stack, build co
 ## No MCP in this bundle
 
 External integrations (Jira ticket creation, audit shipping) run as repo automation, not as MCP servers. Specifically:
-- **Jira**: created by `.github/workflows/create-jira-from-feature.yml` via the Jira REST API when a `.feature` file is added/changed on a PR.
+- **Jira**: created during requirements authoring by the Requirements Gatherer via task `jira:create-from-pending`, which runs `scripts/create_jira_from_feature.py`.
 - **Audit**: written to local JSONL by agents, shipped to Elasticsearch by Filebeat (or the bulk-POST script in `scripts/`), visualised in Kibana.
 
 This keeps every external action auditable (it runs in CI or in a checked-in script) and removes the runtime dependency on MCP server availability.

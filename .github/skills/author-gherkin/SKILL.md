@@ -1,6 +1,6 @@
 ---
 name: author-gherkin
-description: "Use when creating or editing a .feature file in features/. Encodes the Gherkin/BDD authoring conventions for this repo, including frontmatter, REQ-ID/AC-N tagging, scenario structure, and the `jira: pending` placeholder that the GitHub Action replaces on PR open. Primarily used by the Requirements Gatherer."
+description: "Use when creating or editing a .feature file in features/. Encodes the Gherkin/BDD authoring conventions for this repo, including frontmatter, REQ-ID/AC-N tagging, scenario structure, and the jira creation handoff to the Requirements Gatherer's jira:create-from-pending task. Primarily used by the Requirements Gatherer."
 user-invokable: true
 disable-model-invocation: false
 ---
@@ -32,7 +32,7 @@ Gherkin does not support YAML frontmatter natively. Use a leading HTML-style com
 ```gherkin
 # ---
 # req_id: REQ-AUTH-014
-# jira: pending            # the GHA workflow will replace this on PR open
+# jira: pending            # Requirements Gatherer replaces this via jira:create-from-pending
 # status: approved          # draft | approved | in-progress | done | deprecated
 # area: Authentication
 # created: 2026-05-22
@@ -40,7 +40,7 @@ Gherkin does not support YAML frontmatter natively. Use a leading HTML-style com
 # ---
 ```
 
-**Set `jira: pending` for new files.** Do not invent a Jira key — the workflow creates the ticket and writes the real key back.
+**Set `jira: pending` for new files.** Do not invent a Jira key — Requirements Gatherer runs `jira:create-from-pending` and writes the real key back.
 
 ## Feature block
 
@@ -105,11 +105,11 @@ Each example row counts as a separate AC verification — make sure each row's i
 - ❌ Database-level steps (`Then row in users_table has updated_at >= now()`) → assert through the public API.
 - ❌ Conjunctions in step names (`When the user logs in and updates profile`) → split into two `When`s or one `When` + one `And`.
 - ❌ Scenarios without `@REQ-ID @AC-N` tags → Reviewer rejects.
-- ❌ Real Jira keys in `jira: pending` — that breaks idempotency on the workflow.
+- ❌ Invented Jira keys in frontmatter.
 
 ## Output protocol for the Requirements Gatherer
 
 1. Draft the file and present its full content.
 2. Append the new REQ-ID block to `docs/requirements.md` with `Jira: pending`.
 3. Ask the user: *"Confirm this matches your intent. Reply 'go' to hand off to the Planner."*
-4. Do not call any external API; the GitHub Action creates the Jira ticket on PR open.
+4. Requirements Gatherer then runs `jira:create-from-pending` and confirms both files now carry the created Jira key.

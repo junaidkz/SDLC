@@ -121,7 +121,7 @@ When you receive a `STATUS: REJECTED` handoff prompt (see reviewer.agent.md), th
 
 - [ ] Every plan step has a corresponding diff entry.
 - [ ] Every AC has at least one passing test referencing its scenario tag.
-- [ ] `runTasks` for `build`, `test_unit`, `lint`, `audit` all pass.
+- [ ] Required verification tasks for the target repo (for example `build`, `test`, `lint`, `audit`) are executed via `runTasks` and pass, or are explicitly marked `skipped` with a reason.
 - [ ] No packages installed without an accepted ADR.
 - [ ] No secrets, no `eval`/`exec` on untrusted strings, no hard-coded outbound URLs.
 - [ ] Diff summary written to `${diff_path}`.
